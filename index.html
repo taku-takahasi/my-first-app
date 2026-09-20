@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#101a36" />
+    <meta name="theme-color" content="#120d24" />
     <title>STARBOUND RUNNER | 横スクロールアクション</title>
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -13,13 +13,13 @@
         <div class="brand">
           <span class="brand-mark">✦</span>
           <div>
-            <p class="eyebrow">NEON DISTRICT / SECTOR 01</p>
+            <p class="eyebrow">RETRO ARCADE / SECTOR 01</p>
             <h1>STARBOUND <span>RUNNER</span></h1>
           </div>
         </div>
         <div class="status">
           <span class="status-dot"></span>
-          <span>LIVE MISSION</span>
+          <span>● PLAYER 1 READY</span>
         </div>
       </header>
 
@@ -30,11 +30,11 @@
             <div class="energy-bar"><span id="energy"></span></div>
           </div>
           <div class="hud-block hud-score">
-            <span class="hud-label">SCORE</span>
+            <span class="hud-label">1UP SCORE</span>
             <strong id="score">000000</strong>
           </div>
           <div class="hud-block right">
-            <span class="hud-label">DISTANCE</span>
+            <span class="hud-label">STAGE 01</span>
             <strong><span id="distance">000</span><small> M</small></strong>
           </div>
         </div>
@@ -42,16 +42,16 @@
         <div class="canvas-wrap">
           <canvas id="gameCanvas" aria-label="ゲームキャンバス"></canvas>
           <div class="start-screen" id="startScreen">
-            <p class="mission-tag">MISSION 01</p>
+            <p class="mission-tag">★ INSERT COIN ★</p>
             <h2>RUN THE<br /><em>NEON SKYWAY</em></h2>
             <p class="start-copy">障害物をかわし、エネルギーコアを集めて<br />ゴールのゲートを目指せ。</p>
-            <button id="startButton">ミッション開始 <span>→</span></button>
+            <button id="startButton">PRESS START <span>▶</span></button>
           </div>
           <div class="result-screen hidden" id="resultScreen">
             <p class="mission-tag" id="resultTag">MISSION COMPLETE</p>
             <h2 id="resultTitle">CLEAR!</h2>
             <p class="result-score">SCORE <strong id="resultScore">000000</strong></p>
-            <button id="restartButton">もう一度プレイ <span>↻</span></button>
+            <button id="restartButton">PRESS START <span>↻</span></button>
           </div>
         </div>
 

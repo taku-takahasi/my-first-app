@@ -1,5 +1,6 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+ctx.imageSmoothingEnabled = false;
 const scoreEl = document.getElementById("score");
 const distanceEl = document.getElementById("distance");
 const energyEl = document.getElementById("energy");
@@ -137,15 +138,16 @@ function rect(x, y, w, h, color) { ctx.fillStyle = color; ctx.fillRect(x - camer
 
 function draw() {
   ctx.clearRect(0, 0, width, height);
-  const sky = ctx.createLinearGradient(0, 0, 0, height); sky.addColorStop(0, "#090d2d"); sky.addColorStop(.52, "#17184b"); sky.addColorStop(1, "#10152e"); ctx.fillStyle = sky; ctx.fillRect(0, 0, width, height);
+  const sky = ctx.createLinearGradient(0, 0, 0, height); sky.addColorStop(0, "#64d9f5"); sky.addColorStop(.58, "#9be9f2"); sky.addColorStop(1, "#ffd27d"); ctx.fillStyle = sky; ctx.fillRect(0, 0, width, height);
   const glow = ctx.createRadialGradient(width * .7, 70, 5, width * .7, 70, 240);
-  glow.addColorStop(0, "rgba(103, 94, 255, .28)"); glow.addColorStop(1, "rgba(103, 94, 255, 0)");
+  glow.addColorStop(0, "rgba(255, 247, 142, .38)"); glow.addColorStop(1, "rgba(255, 247, 142, 0)");
   ctx.fillStyle = glow; ctx.fillRect(0, 0, width, height);
-  for (const s of stars) { ctx.globalAlpha = s.alpha; ctx.fillStyle = "#b9c8ff"; ctx.fillRect(s.x - camera * .15, s.y, s.size, s.size); } ctx.globalAlpha = 1;
-  drawMoon();
+  for (const s of stars) { ctx.globalAlpha = s.alpha; ctx.fillStyle = s.size % 2 ? "#fff4a8" : "#ff8fba"; ctx.fillRect(s.x - camera * .15, s.y, s.size + 1, s.size + 1); } ctx.globalAlpha = 1;
+  drawSun();
+  drawClouds();
   drawCity();
   for (let layer = 0; layer < 2; layer++) {
-    ctx.fillStyle = layer ? "#111735" : "#1b2250";
+    ctx.fillStyle = layer ? "#6c72bd" : "#7f8bd0";
     for (let x = -((camera * (layer ? .22 : .12)) % 240) - 240; x < width + 240; x += 240) {
       ctx.beginPath(); ctx.moveTo(x, 350); ctx.lineTo(x + 80, 220 + layer * 38); ctx.lineTo(x + 205, 350); ctx.fill();
     }
@@ -153,28 +155,41 @@ function draw() {
   for (const p of platforms) { drawPlatform(p); }
   for (const c of cores) if (!c.collected) { drawCore(c); }
   for (const e of enemies) if (e.alive) { drawEnemy(e); }
-  for (const s of shots) { ctx.shadowBlur = 12; ctx.shadowColor = "#a87dff"; rect(s.x, s.y, 20, 3, "#e0d4ff"); ctx.shadowBlur = 0; }
+  for (const s of shots) {
+    ctx.shadowBlur = 14; ctx.shadowColor = "#ff2f92";
+    rect(s.x - 3, s.y - 3, 26, 9, "#3b176d");
+    rect(s.x, s.y - 1, 20, 5, "#fff8d6");
+    ctx.shadowBlur = 0;
+  }
   for (const p of particles) { ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color; ctx.fillRect(p.x - camera, p.y, 4, 4); } ctx.globalAlpha = 1;
   drawPlayer();
   ctx.fillStyle = "#5df6eb"; ctx.font = "10px Space Mono"; ctx.fillText("GATE // 6.2KM", 6240 - camera, 335);
 }
 
-function drawMoon() {
+function drawSun() {
   const x = width * .78 - camera * .04, y = 72;
-  ctx.globalAlpha = .7; ctx.shadowBlur = 35; ctx.shadowColor = "#8c9cff";
-  ctx.fillStyle = "#b6c7ff"; ctx.beginPath(); ctx.arc(x, y, 25, 0, Math.PI * 2); ctx.fill();
-  ctx.shadowBlur = 0; ctx.fillStyle = "#6d72c5"; ctx.globalAlpha = .26;
-  for (const crater of [[-9, -8, 5], [8, 7, 7], [4, -10, 3]]) { ctx.beginPath(); ctx.arc(x + crater[0], y + crater[1], crater[2], 0, Math.PI * 2); ctx.fill(); }
-  ctx.globalAlpha = 1;
+  ctx.save(); ctx.translate(x, y); ctx.strokeStyle = "#ff9f43"; ctx.lineWidth = 4;
+  for (let i = 0; i < 8; i++) { ctx.rotate(Math.PI / 4); ctx.beginPath(); ctx.moveTo(0, -38); ctx.lineTo(0, -30); ctx.stroke(); }
+  ctx.fillStyle = "#ffe66d"; ctx.beginPath(); ctx.arc(0, 0, 25, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#ffb347"; ctx.fillRect(-11, -8, 6, 5); ctx.fillRect(6, -8, 6, 5); ctx.fillRect(-7, 8, 14, 4); ctx.restore();
+}
+
+function drawClouds() {
+  for (const cloud of [[150, 92, 1], [530, 132, .75]]) {
+    const x = cloud[0] - camera * .08, y = cloud[1], s = cloud[2];
+    ctx.fillStyle = "rgba(255,255,255,.72)";
+    ctx.beginPath(); ctx.arc(x, y, 18 * s, Math.PI, 0); ctx.arc(x + 22 * s, y - 8 * s, 24 * s, Math.PI, 0); ctx.arc(x + 50 * s, y, 17 * s, Math.PI, 0); ctx.fill();
+    ctx.fillRect(x - 18 * s, y, 68 * s, 15 * s);
+  }
 }
 
 function drawCity() {
   for (let i = 0; i < 17; i++) {
     const x = i * 92 - ((camera * .18) % 92) - 60, h = 38 + (i * 31) % 88;
-    ctx.fillStyle = i % 3 === 0 ? "#171b48" : "#111638"; ctx.fillRect(x, 350 - h, 63, h);
+    ctx.fillStyle = i % 3 === 0 ? "#57569a" : "#4c528f"; ctx.fillRect(x, 350 - h, 63, h);
     for (let row = 0; row < 4; row++) for (let col = 0; col < 3; col++) {
       ctx.globalAlpha = ((i + row + col) % 4 === 0) ? .7 : .15;
-      ctx.fillStyle = (i + col) % 3 === 0 ? "#5df6eb" : "#a87dff";
+      ctx.fillStyle = (i + col) % 3 === 0 ? "#ffe66d" : "#ff8fba";
       ctx.fillRect(x + 10 + col * 17, 350 - h + 13 + row * 18, 5, 3);
     }
   }
@@ -184,7 +199,7 @@ function drawCity() {
 function drawPlatform(p) {
   const x = p.x - camera;
   const body = ctx.createLinearGradient(x, p.y, x, p.y + p.h);
-  body.addColorStop(0, "#27356d"); body.addColorStop(1, "#111735");
+  body.addColorStop(0, "#6654a6"); body.addColorStop(1, "#40366d");
   ctx.fillStyle = body; ctx.fillRect(x, p.y, p.w, p.h);
   ctx.fillStyle = "#5df6eb"; ctx.shadowBlur = 10; ctx.shadowColor = "#5df6eb"; ctx.fillRect(x, p.y, p.w, 3); ctx.shadowBlur = 0;
   ctx.fillStyle = "#a87dff"; ctx.globalAlpha = .5; ctx.fillRect(x + 12, p.y + 14, Math.max(20, p.w - 24), 1); ctx.globalAlpha = 1;
@@ -196,8 +211,10 @@ function drawPlatform(p) {
 function drawCore(c) {
   const x = c.x - camera, pulse = 1 + Math.sin(performance.now() / 180 + c.bob) * .16;
   ctx.save(); ctx.translate(x, c.y); ctx.rotate(Math.PI / 4); ctx.scale(pulse, pulse);
-  ctx.shadowBlur = 20; ctx.shadowColor = "#5df6eb"; ctx.fillStyle = "#5df6eb"; ctx.fillRect(-7, -7, 14, 14);
-  ctx.fillStyle = "#efffff"; ctx.fillRect(-3, -3, 6, 6); ctx.restore();
+  ctx.shadowBlur = 18; ctx.shadowColor = "#ff5c35";
+  ctx.fillStyle = "#4a176f"; ctx.fillRect(-12, -12, 24, 24);
+  ctx.fillStyle = "#ffcf3f"; ctx.fillRect(-8, -8, 16, 16);
+  ctx.fillStyle = "#fffbe0"; ctx.fillRect(-3, -3, 6, 6); ctx.restore();
 }
 
 function drawEnemy(e) {
